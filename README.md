@@ -5,11 +5,11 @@ A reusable `<CurrencyInput />` component for entering **EUR** amounts with **per
 > NOTE:
 > All the timestamps based on the git commits are attached in `timestamp.md` file.
 >
-> Start: d3af4e2 | 2025-09-21 15:46:14 +0530 | Initialize project using Create React App
+> Start: 9f6c57d | 2025-09-21 16:06:40 +0530 | init: Setup React app with tests
 >
 > End: 729d57f | 2025-09-21 19:51:24 +0530 | finalize the must have features
 >
-> Time for main features: 4hrs and 5 mins
+> Time for main features: 3hrs and 51 mins
 >
 > Nice to have features:
 >
