@@ -9,16 +9,16 @@ import {
   useState,
   useEffect,
 } from "react";
-import {
-  currencyFormatter,
-  decimalFormatter,
-  getCurrencyDetailsByLocale,
-} from "../lib/utilts";
+import { currencyFormatter, getCurrencyDetailsByLocale } from "../lib/utilts";
 import {
   DEFAULT_CURRENCY_DECIMALS,
   LOCALE_CURRENCY_MAP,
 } from "../config/constants";
-import { CurrencyDetailsType, LocaleType } from "../types";
+import {
+  CurrencyDetailsType,
+  CurrencyFormatterReturnType,
+  LocaleType,
+} from "../types";
 
 type InputPropsType = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -85,9 +85,11 @@ const CurrencyInput = ({
   ...delegated
 }: CurrencyInputPropsType) => {
   const _isNumberpadDecimal = useRef<boolean>(false);
+  const _numericValue = useRef<number>();
   const [currencyValue, setCurrencyValue] = useState<string>(() => value ?? ""); // Lazy initialization avoid unnecessary re-renders
   const [selectedCurrencyData, setSelectedCurrencyData] =
-    useState<CurrencyDetailsType>(DefaultCurrencyData);
+    useState<CurrencyDetailsType>(() => DefaultCurrencyData);
+
   const [validationErrors, setValidationErrors] = useState<
     string | undefined
   >();
@@ -102,17 +104,38 @@ const CurrencyInput = ({
     }
   }, [value, currencyValue]);
 
-  const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const inputType = (e.nativeEvent as InputEvent).inputType;
-    const fractionDigits =
-      inputType === "insertFromPaste" ||
-      inputType === "insertFromPasteAsQuotation"
-        ? DEFAULT_CURRENCY_DECIMALS
-        : undefined;
+  useEffect(() => {
+    if (selectedCurrencyData && _numericValue.current) {
+      updateCurrencyValue(
+        _numericValue.current.toString(),
+        DEFAULT_CURRENCY_DECIMALS
+      );
+    }
 
-    let { formattedValue, value } = currencyFormatter(e.target.value, {
+    /*
+     * This effect should be triggered only when the selectedCurrencyData.locale gets changed.
+     * It should not depend on currencyValue or updateCurrencyValue.
+     */
+
+    // eslint-disable-next-line
+  }, [selectedCurrencyData.locale]);
+
+  const updateCurrencyValue = (
+    amount: string,
+    fractionDigits?: number
+  ): CurrencyFormatterReturnType | void => {
+    /*
+     * This is the single entry point of formatting & validating monetary value.
+     */
+    const { formattedValue, value } = currencyFormatter(amount, {
       fractionDigits,
+      locale: selectedCurrencyData.locale,
+      currency: selectedCurrencyData.currency,
+      decimalSeparator: selectedCurrencyData.decimalSeparator,
+      thousandSeparator: selectedCurrencyData.thousandSeparator,
     });
+
+    _numericValue.current = value;
 
     setValidationErrors(undefined);
 
@@ -125,8 +148,29 @@ const CurrencyInput = ({
       setValidationErrors(`Amount should not be less than ${min}`);
     }
 
-    onChange?.(formattedValue, e);
     setCurrencyValue(formattedValue);
+
+    return { formattedValue, value };
+  };
+
+  const handleOnChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!selectedCurrencyData) return;
+
+    const inputType = (e.nativeEvent as InputEvent).inputType;
+
+    // If the value is pasted from the clipboard,
+    // the decimals should be rounded to 2 digits.
+    const fractionDigits =
+      inputType === "insertFromPaste" ||
+      inputType === "insertFromPasteAsQuotation"
+        ? DEFAULT_CURRENCY_DECIMALS
+        : undefined;
+
+    const data = updateCurrencyValue(e.target.value, fractionDigits);
+
+    if (data) {
+      onChange?.(data.formattedValue, e);
+    }
   };
 
   const handleOnBlur: FocusEventHandler<HTMLInputElement> = (e) => {
@@ -134,10 +178,13 @@ const CurrencyInput = ({
       return;
     }
 
-    const formattedValue = decimalFormatter(currencyValue);
+    // If the input is blurred,
+    // the decimals should be rounded to 2 digits.
+    const data = updateCurrencyValue(e.target.value, DEFAULT_CURRENCY_DECIMALS);
 
-    onBlur?.(formattedValue, e);
-    setCurrencyValue(formattedValue);
+    if (data) {
+      onBlur?.(data.formattedValue, e);
+    }
   };
 
   const handleOnkeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
@@ -215,6 +262,7 @@ const CurrencyInput = ({
             name="pets"
             id="locale-select"
             onChange={handleOnChangeLocale}
+            value={selectedCurrencyData.locale}
           >
             {LOCALE_CURRENCY_MAP.map(renderLocale)}
           </select>
@@ -230,7 +278,7 @@ const CurrencyInput = ({
   );
 };
 
-const DefaultCurrencyData = getCurrencyDetailsByLocale(
+export const DefaultCurrencyData = getCurrencyDetailsByLocale(
   "de-DE"
 ) as CurrencyDetailsType;
 
