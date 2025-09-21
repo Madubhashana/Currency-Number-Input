@@ -36,6 +36,8 @@ type InputPropsType = Omit<
  */
 type CurrencyInputPropsType = Readonly<{
   value?: string;
+  min?: number;
+  max?: number;
   onChange?: (next: string, event: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (next: string, event: FocusEvent<HTMLInputElement, Element>) => void;
 }> &
@@ -68,12 +70,17 @@ type CurrencyInputPropsType = Readonly<{
 
 const CurrencyInput = ({
   value,
+  min = 100,
+  max = 1300,
   onChange,
   onBlur,
   ...delegated
 }: CurrencyInputPropsType) => {
   const _isNumberpadDecimal = useRef<boolean>(false);
   const [currencyValue, setCurrencyValue] = useState<string>(() => value ?? ""); // Lazy initialization avoid unnecessary re-renders
+  const [validationErrors, setValidationErrors] = useState<
+    string | undefined
+  >();
 
   useEffect(() => {
     /* Uncontrolled value updates
@@ -93,9 +100,20 @@ const CurrencyInput = ({
         ? DEFAULT_CURRENCY_DECIMALS
         : undefined;
 
-    const formattedValue = currencyFormatter(e.target.value, {
+    let { formattedValue, value } = currencyFormatter(e.target.value, {
       fractionDigits,
     });
+
+    setValidationErrors(undefined);
+
+    if (max !== undefined && value > max) {
+      setValidationErrors(`Amount should not be greater than ${max}`);
+      return;
+    }
+
+    if (min !== undefined && value < min && formattedValue?.length) {
+      setValidationErrors(`Amount should not be less than ${min}`);
+    }
 
     onChange?.(formattedValue, e);
     setCurrencyValue(formattedValue);
@@ -147,7 +165,7 @@ const CurrencyInput = ({
   return (
     <div className="input-container">
       <label>Currency Input</label>
-      <br />
+
       <input
         value={currencyValue}
         onChange={handleOnChange}
@@ -158,6 +176,9 @@ const CurrencyInput = ({
         onBeforeInput={handleOnBeforeInput}
         {...delegated}
       />
+      {validationErrors ? (
+        <span className="form-error">{validationErrors}</span>
+      ) : null}
     </div>
   );
 };

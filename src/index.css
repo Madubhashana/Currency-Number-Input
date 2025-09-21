@@ -25,9 +25,15 @@ code {
   margin-top: 200px;
 }
 
+.input-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 240px;
+  width: 100%;
+}
+
 .input-container input {
   padding: 8px 8px;
-  width: 200px;
   font-size: 18px;
   margin-top: 8px;
   border-radius: 6px;
@@ -35,4 +41,10 @@ code {
 
 .input-container label {
   font-size: 12px;
+}
+
+.input-container .form-error {
+  color: red;
+  font-size: 12px;
+  padding: 5px 0;
 }

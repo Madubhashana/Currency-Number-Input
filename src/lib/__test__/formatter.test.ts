@@ -6,24 +6,38 @@ import {
 
 describe("sanitizeCurrencyValue", () => {
   it("should accepts digits, dot, and comma only", () => {
-    expect(sanitizeCurrencyValue("abc123.45,xyz!")).toBe("123.45,");
+    expect(sanitizeCurrencyValue("abc123.45,xyz!")).toStrictEqual("123.45,");
 
-    expect(sanitizeCurrencyValue("Price: $4,567.89 USD")).toBe("4,567.89");
+    expect(sanitizeCurrencyValue("Price: $4,567.89 USD")).toStrictEqual(
+      "4,567.89"
+    );
   });
 });
 
 describe("currencyFormatter functionality", () => {
   it("returns empty string for empty input", () => {
-    expect(currencyFormatter("")).toBe("");
+    expect(currencyFormatter("")).toStrictEqual({
+      formattedValue: "",
+      value: 0,
+    });
   });
 
   it("preserves a trailing comma", () => {
-    expect(currencyFormatter("1234,")).toBe("1.234,");
+    expect(currencyFormatter("1234,")).toStrictEqual({
+      formattedValue: "1.234,",
+      value: 1234,
+    });
   });
 
   it("is idempotent for already-formatted values with dot thousands + comma decimal", () => {
-    expect(currencyFormatter("1.234,5")).toBe("1.234,5");
-    expect(currencyFormatter("1.234,56")).toBe("1.234,56");
+    expect(currencyFormatter("1.234,5")).toStrictEqual({
+      formattedValue: "1.234,5",
+      value: 1234.5,
+    });
+    expect(currencyFormatter("1.234,56")).toStrictEqual({
+      formattedValue: "1.234,56",
+      value: 1234.56,
+    });
   });
 });
 
@@ -40,11 +54,29 @@ describe("decimalFormatter functionality", () => {
 
 describe("currencyFormatter expected behaviours", () => {
   it("should returns the expected outcomes when typing", () => {
-    expect(currencyFormatter("1")).toBe("1");
-    expect(currencyFormatter("1.")).toBe("1");
-    expect(currencyFormatter("1234")).toBe("1.234");
-    expect(currencyFormatter("1234,")).toBe("1.234,");
-    expect(currencyFormatter("1234,5")).toBe("1.234,5");
-    expect(currencyFormatter("1234,50")).toBe("1.234,50");
+    expect(currencyFormatter("1")).toStrictEqual({
+      formattedValue: "1",
+      value: 1,
+    });
+    expect(currencyFormatter("1.")).toStrictEqual({
+      formattedValue: "1",
+      value: 1,
+    });
+    expect(currencyFormatter("1234")).toStrictEqual({
+      formattedValue: "1.234",
+      value: 1234,
+    });
+    expect(currencyFormatter("1234,")).toStrictEqual({
+      formattedValue: "1.234,",
+      value: 1234,
+    });
+    expect(currencyFormatter("1234,5")).toStrictEqual({
+      formattedValue: "1.234,5",
+      value: 1234.5,
+    });
+    expect(currencyFormatter("1234,50")).toStrictEqual({
+      formattedValue: "1.234,50",
+      value: 1234.5,
+    });
   });
 });

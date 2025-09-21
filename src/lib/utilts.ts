@@ -1,4 +1,5 @@
 import { DEFAULT_CURRENCY_DECIMALS } from "../config/constants";
+import { CurrencyFormatterReturnType } from "../types";
 
 export const testUtilFunction = (num1: number, num2: number) => {
   return num1 + num2;
@@ -7,9 +8,6 @@ export const testUtilFunction = (num1: number, num2: number) => {
 export const sanitizeCurrencyValue = (value: string) => {
   // Keep only digits, dot, and comma
   value = value.replace(/[^0-9.,]/g, "");
-
-  // Replace custom thousand separators
-  value = value.replaceAll(".", "");
 
   /* Keep only one decimal seperator (the last occurance)
    * Note: User may enter an invalid value with more than one decimal seperators.
@@ -36,7 +34,7 @@ const getFormattedCurrency = ({
   fractionDigits: number;
   hasDecimalValues: boolean;
   isEndingWithComma: boolean;
-}) => {
+}): CurrencyFormatterReturnType => {
   const currencyFormatter = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
@@ -55,25 +53,37 @@ const getFormattedCurrency = ({
 
       return !["decimal", "fraction"].includes(_part.type);
     })
-    .filter((_part) => _part.type !== "literal" || _part.value.trim().length)
-    .map((_part) => _part.value);
+    .filter((_part) => _part.type !== "literal" || _part.value.trim().length);
 
   if (isEndingWithComma) {
-    formattedParts.push(",");
+    formattedParts.push({ value: ",", type: "decimal" });
   }
 
-  return formattedParts.join("");
+  const valueParts = formattedParts.filter((_part) => _part.type !== "group");
+
+  return {
+    formattedValue: formattedParts.map((_part) => _part.value).join(""),
+    value: Number(
+      valueParts
+        .map((_part) => _part.value)
+        .join("")
+        .replace(",", ".")
+    ),
+  };
 };
 
 export const currencyFormatter = (
   value: string,
   options?: { fractionDigits?: number }
-) => {
+): CurrencyFormatterReturnType => {
   if (!value.length) {
-    return "";
+    return { formattedValue: "", value: 0 };
   }
 
   value = sanitizeCurrencyValue(value);
+
+  // Replace custom thousand separators
+  value = value.replaceAll(".", "");
 
   const isEndingWithComma = value.endsWith(",");
 
@@ -115,5 +125,5 @@ export const decimalFormatter = (
     fractionDigits,
     hasDecimalValues: true,
     isEndingWithComma: false,
-  });
+  }).formattedValue;
 };
