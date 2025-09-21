@@ -32,7 +32,8 @@ code {
   width: 100%;
 }
 
-.input-container input {
+.input-container input,
+select {
   padding: 8px 8px;
   font-size: 18px;
   margin-top: 8px;
@@ -47,4 +48,10 @@ code {
   color: red;
   font-size: 12px;
   padding: 5px 0;
+}
+
+.currency-input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 }

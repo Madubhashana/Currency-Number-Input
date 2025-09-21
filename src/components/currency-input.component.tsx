@@ -9,8 +9,16 @@ import {
   useState,
   useEffect,
 } from "react";
-import { currencyFormatter, decimalFormatter } from "../lib/utilts";
-import { DEFAULT_CURRENCY_DECIMALS } from "../config/constants";
+import {
+  currencyFormatter,
+  decimalFormatter,
+  getCurrencyDetailsByLocale,
+} from "../lib/utilts";
+import {
+  DEFAULT_CURRENCY_DECIMALS,
+  LOCALE_CURRENCY_MAP,
+} from "../config/constants";
+import { CurrencyDetailsType, LocaleType } from "../types";
 
 type InputPropsType = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -70,14 +78,16 @@ type CurrencyInputPropsType = Readonly<{
 
 const CurrencyInput = ({
   value,
-  min = 100,
-  max = 1300,
+  min,
+  max,
   onChange,
   onBlur,
   ...delegated
 }: CurrencyInputPropsType) => {
   const _isNumberpadDecimal = useRef<boolean>(false);
   const [currencyValue, setCurrencyValue] = useState<string>(() => value ?? ""); // Lazy initialization avoid unnecessary re-renders
+  const [selectedCurrencyData, setSelectedCurrencyData] =
+    useState<CurrencyDetailsType>(DefaultCurrencyData);
   const [validationErrors, setValidationErrors] = useState<
     string | undefined
   >();
@@ -162,25 +172,66 @@ const CurrencyInput = ({
     _isNumberpadDecimal.current = false;
   };
 
+  const handleOnChangeLocale: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    if (e.target.value === selectedCurrencyData?.locale) {
+      return;
+    }
+
+    const currencyDetails = getCurrencyDetailsByLocale(e.target.value);
+
+    if (currencyDetails) {
+      setSelectedCurrencyData(currencyDetails);
+    }
+  };
+
+  const renderLocale = (locale: LocaleType) => {
+    return (
+      <option value={locale.code} key={locale.code}>
+        {locale.name}
+      </option>
+    );
+  };
+
   return (
     <div className="input-container">
-      <label>Currency Input</label>
+      <div className="currency-input-container">
+        <div>
+          <label>Currency Input</label>
+          <input
+            value={currencyValue}
+            onChange={handleOnChange}
+            onBlur={handleOnBlur}
+            id="currency-input"
+            data-testid="currency-input"
+            onKeyDown={handleOnkeyDown}
+            onBeforeInput={handleOnBeforeInput}
+            {...delegated}
+          />
+        </div>
 
-      <input
-        value={currencyValue}
-        onChange={handleOnChange}
-        onBlur={handleOnBlur}
-        id="currency-input"
-        data-testid="currency-input"
-        onKeyDown={handleOnkeyDown}
-        onBeforeInput={handleOnBeforeInput}
-        {...delegated}
-      />
+        <div>
+          <label>Locale</label>
+          <select
+            name="pets"
+            id="locale-select"
+            onChange={handleOnChangeLocale}
+          >
+            {LOCALE_CURRENCY_MAP.map(renderLocale)}
+          </select>
+        </div>
+      </div>
+
       {validationErrors ? (
-        <span className="form-error">{validationErrors}</span>
+        <span className="form-error" data-testid="form-error-message">
+          {validationErrors}
+        </span>
       ) : null}
     </div>
   );
 };
+
+const DefaultCurrencyData = getCurrencyDetailsByLocale(
+  "de-DE"
+) as CurrencyDetailsType;
 
 export default CurrencyInput;
