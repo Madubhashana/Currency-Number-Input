@@ -18,7 +18,7 @@ code {
   padding: 16px;
 }
 
-.input-container {
+.content-container {
   display: flex;
   flex: 1;
   justify-content: center;
@@ -29,4 +29,10 @@ code {
   padding: 8px 8px;
   width: 200px;
   font-size: 18px;
+  margin-top: 8px;
+  border-radius: 6px;
+}
+
+.input-container label {
+  font-size: 12px;
 }
