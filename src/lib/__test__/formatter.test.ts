@@ -1,4 +1,8 @@
-import { sanitizeCurrencyValue, currencyFormatter } from "../utilts";
+import {
+  sanitizeCurrencyValue,
+  currencyFormatter,
+  decimalFormatter,
+} from "../utilts";
 
 describe("sanitizeCurrencyValue", () => {
   it("should accepts digits, dot, and comma only", () => {
@@ -21,14 +25,16 @@ describe("currencyFormatter functionality", () => {
     expect(currencyFormatter("1.234,5")).toBe("1.234,5");
     expect(currencyFormatter("1.234,56")).toBe("1.234,56");
   });
+});
 
+describe("decimalFormatter functionality", () => {
   it("rounds to 2 decimals only when the input provides >=2 decimals", () => {
     // With ',50' exactly two decimals, it keeps two
-    expect(currencyFormatter("0001234,50")).toBe("1.234,50");
+    expect(decimalFormatter("0001234,50")).toBe("1.234,50");
 
     // With more than two decimals, function sets fractionDigits to 2
     // Example: "1.234,567" -> dots removed to "1234,567" -> becomes 1234.567 -> formatted "1.234,57"
-    expect(currencyFormatter("1.234,567")).toBe("1.234,57");
+    expect(decimalFormatter("1.234,567")).toBe("1.234,57");
   });
 });
 
