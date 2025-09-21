@@ -1,46 +1,35 @@
-# Getting Started with Create React App
+# Currency Number Input (React 18 + TypeScript)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A reusable `<CurrencyInput />` component for entering **EUR** amounts with **period (.)** as the thousands separator and **comma (,)** as the decimal separator. Always formats to **two decimals on blur**, and treats the **numpad decimal key** as the decimal separator regardless of OS/keyboard layout.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Getting Started](#getting-started)
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting Started
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+This project uses Create React App (react-scripts@5) with React 18 and TypeScript. A minimal demo is included via CRA:
 
-### `npm test`
+```bash
+pnpm install
+pnpm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Then open http://localhost:3000
+.
+The demo shows a controlled <CurrencyInput /> with live thousand separators and two-decimal formatting on blur.
 
-### `npm run build`
+## Parsing & Formatting Strategy
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Parsing & Formatting Strategy
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Sanitization first:** keep only digits, `.` and `,` for all edits (typing and paste). Treat `.` as thousands, `,` as decimal.
+- **Intl with dynamic config:** utilizes `Intl.NumberFormat` with **dynamic custom configuration** as needed (e.g., `locale`, `currency`, `style`, `minimumFractionDigits`, `maximumFractionDigits`). This allows switching locales/currencies or toggling fraction precision without changing core logic.
+- **Single entry point (onChange):** the main strategy is to have **one place** that formats the text—`onChange`. All edit paths (typing, paste, programmatic updates) ultimately route through `onChange`, ensuring consistent live formatting rules.
+- **Numpad decimal override → onChange:** strategically intercept the **NumpadDecimal** press and rewrite the pending character to `,` (via `beforeinput`/`setRangeText`) and then dispatch a native `input` so it’s **adopted by `onChange`** (the single entry point).
+- **Typing flow:** `keydown → beforeinput` (optionally rewrite `.` to `,`) → native `input` → `onChange` formats with current rules and (optionally) reinserts thousands separators.
+- **Paste flow:** capture clipboard text, sanitize/normalize markers, then hand off to `onChange` for consistent formatting.
+- **Blur normalization:** when leaving the field, normalize to two decimals (or the configured fraction policy) using `Intl.NumberFormat`, preserving thousands separators.
+- **Caret safety:** when rewriting characters or inserting separators, use `setRangeText` and restore selection so the caret remains intuitive.

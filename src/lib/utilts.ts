@@ -6,6 +6,22 @@ export const testUtilFunction = (num1: number, num2: number) => {
 
 export const sanitizeCurrencyValue = (value: string) => {
   // Keep only digits, dot, and comma
+  value = value.replace(/[^0-9.,]/g, "");
+
+  // Replace custom thousand separators
+  value = value.replaceAll(".", "");
+
+  /* Keep only one decimal seperator (the last occurance)
+   * Note: User may enter an invalid value with more than one decimal seperators.
+   */
+  const lastIndex = value.lastIndexOf(",");
+  if (lastIndex >= 0) {
+    const valueWithoutCommas = value.replace(/,/g, "");
+    value =
+      valueWithoutCommas.slice(0, lastIndex) +
+      "," +
+      valueWithoutCommas.slice(lastIndex);
+  }
 
   return value.replace(/[^0-9.,]/g, "");
 };
@@ -58,9 +74,6 @@ export const currencyFormatter = (
   }
 
   value = sanitizeCurrencyValue(value);
-
-  // Replace custom thousand separators
-  value = value.replaceAll(".", "");
 
   const isEndingWithComma = value.endsWith(",");
 
