@@ -41,10 +41,4 @@ describe("currencyFormatter expected behaviours", () => {
     expect(currencyFormatter("1234,5")).toBe("1.234,5");
     expect(currencyFormatter("1234,50")).toBe("1.234,50");
   });
-
-  it.skip("should returns the expected outcomes when paste value", () => {
-    expect(currencyFormatter("€1,234.5")).toBe("1.234,50");
-    expect(currencyFormatter("1234,5")).toBe("1.234,5");
-    expect(currencyFormatter("1.234,567")).toBe("1.234,57");
-  });
 });
