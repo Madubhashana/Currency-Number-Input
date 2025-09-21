@@ -2,11 +2,23 @@
 
 A reusable `<CurrencyInput />` component for entering **EUR** amounts with **period (.)** as the thousands separator and **comma (,)** as the decimal separator. Always formats to **two decimals on blur**, and treats the **numpad decimal key** as the decimal separator regardless of OS/keyboard layout.
 
-## Table of Contents
-
-- [Getting Started](#getting-started)
-
----
+> NOTE:
+> All the timestamps based on the git commits are attached in `timestamp.md` file.
+>
+> Start: d3af4e2 | 2025-09-21 15:46:14 +0530 | Initialize project using Create React App
+>
+> End: 729d57f | 2025-09-21 19:51:24 +0530 | finalize the must have features
+>
+> Time for main features: 4hrs and 5 mins
+>
+> Nice to have features:
+>
+> - Component can be used as uncontrolled component
+> - Live separators while typing
+> - min/max functionality
+> - showSymbol prop
+> - Currency conversion
+> - Locale switching
 
 ## Getting Started
 

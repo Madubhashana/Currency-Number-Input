@@ -1,0 +1,13 @@
+- d3af4e2 | 2025-09-21 15:46:14 +0530 | Initialize project using Create React App
+- 9f6c57d | 2025-09-21 16:06:40 +0530 | init: Setup React app with tests
+- 90456c5 | 2025-09-21 17:10:45 +0530 | feat: basic EUR currency formatting (dot thousands, comma decimals)
+- baed962 | 2025-09-21 18:13:35 +0530 | feat: format currency on blur and on paste
+- 80bb82d | 2025-09-21 18:19:33 +0530 | fix: update unit tests for decimalFormatter
+- 833859b | 2025-09-21 19:19:01 +0530 | udate: downgrade the react version to 18
+- 31e99b2 | 2025-09-21 19:26:03 +0530 | feat: Numberpad Decimal key override
+- 729d57f | 2025-09-21 19:51:24 +0530 | finalize the must have features
+- b0b57e4 | 2025-09-21 20:30:09 +0530 | feat: make the component un-controllable
+- 1be8126 | 2025-09-21 21:04:09 +0530 | feat: min/max functionality
+- cf88a17 | 2025-09-21 22:04:37 +0530 | update: locale selector
+- 3bef4c5 | 2025-09-21 23:17:41 +0530 | feat: Locale switching
+- 3bf8d77 | 2025-09-21 23:56:38 +0530 | fix: live currency conversion
