@@ -15,13 +15,13 @@ describe("sanitizeCurrencyValue", () => {
 
 const {
   decimalSeparator,
-  thousandSeparator,
+  thousandsSeparator,
   locale,
   currency,
 }: CurrencyDetailsType = {
   currency: "EUR",
   currencySymbol: "€",
-  thousandSeparator: ".",
+  thousandsSeparator: ".",
   decimalSeparator: ",",
   locale: "de-DE",
 };
@@ -31,7 +31,7 @@ describe("currencyFormatter functionality", () => {
     expect(
       currencyFormatter("", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -45,7 +45,7 @@ describe("currencyFormatter functionality", () => {
     expect(
       currencyFormatter("1234,", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -59,7 +59,7 @@ describe("currencyFormatter functionality", () => {
     expect(
       currencyFormatter("1.234,5", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -70,7 +70,7 @@ describe("currencyFormatter functionality", () => {
     expect(
       currencyFormatter("1.234,56", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -86,7 +86,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -97,7 +97,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1.", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -108,7 +108,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1234", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -119,7 +119,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1234,", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -130,7 +130,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1234,5", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })
@@ -141,7 +141,7 @@ describe("currencyFormatter expected behaviours", () => {
     expect(
       currencyFormatter("1234,50", {
         decimalSeparator,
-        thousandSeparator,
+        thousandsSeparator,
         locale,
         currency,
       })

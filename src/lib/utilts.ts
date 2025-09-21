@@ -4,32 +4,45 @@ import { CurrencyFormatterReturnType, CurrencyDetailsType } from "../types";
 export const testUtilFunction = (num1: number, num2: number) => {
   return num1 + num2;
 };
-
-const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const isAsciiDigit = (ch: string) => {
+  const c = ch.charCodeAt(0);
+  return c >= 48 && c <= 57; // '0'..'9'
+};
 
 export const sanitizeCurrencyValue = (
   value: string,
   decimalSeparator: string,
-  thousandSeparator: string
+  thousandsSeparator: string
 ) => {
   /* Keep only one decimal seperator (the last occurance)
    * Note: User may enter an invalid value with more than one decimal seperators.
    */
   const lastIndex = value.lastIndexOf(decimalSeparator);
   if (lastIndex >= 0) {
-    const valueWithoutCommas = value.replaceAll(decimalSeparator, "");
+    const valueWithoutDecimalSeparator = value.replaceAll(decimalSeparator, "");
     value =
-      valueWithoutCommas.slice(0, lastIndex) +
+      valueWithoutDecimalSeparator.slice(0, lastIndex) +
       decimalSeparator +
-      valueWithoutCommas.slice(lastIndex);
+      valueWithoutDecimalSeparator.slice(lastIndex);
   }
 
+  if (thousandsSeparator === " ") {
+    thousandsSeparator = "";
+  }
+
+  let out = "";
+
   // Keep only the digits and separators
-  const regex = new RegExp(
-    `[^0-9${escapeRegex(decimalSeparator)}${escapeRegex(thousandSeparator)}]`,
-    "g"
-  );
-  return value.replace(regex, "");
+  for (const ch of value) {
+    if (
+      isAsciiDigit(ch) ||
+      ch === decimalSeparator ||
+      ch === thousandsSeparator
+    ) {
+      out += ch;
+    }
+  }
+  return out;
 };
 
 const getFormattedCurrency = ({
@@ -73,11 +86,6 @@ const getFormattedCurrency = ({
     formattedParts.push({ value: decimalSeparator, type: "decimal" });
   }
 
-  const valueParts = formattedParts.filter((_part) => _part.type !== "group");
-
-  console.log("decimalSeparator ", decimalSeparator);
-  console.log("valueParts ", value);
-
   return {
     formattedValue: formattedParts.map((_part) => _part.value).join(""),
     value: Number(value),
@@ -88,7 +96,7 @@ export const currencyFormatter = (
   value: string,
   options: {
     fractionDigits?: number;
-    thousandSeparator?: string;
+    thousandsSeparator?: string;
     decimalSeparator?: string;
     locale: string;
     currency: string;
@@ -98,13 +106,13 @@ export const currencyFormatter = (
     return { formattedValue: "", value: 0 };
   }
 
-  const thousandSeparator = options?.thousandSeparator ?? ".";
+  const thousandsSeparator = options?.thousandsSeparator ?? ".";
   const decimalSeparator = options?.decimalSeparator ?? ",";
 
-  value = sanitizeCurrencyValue(value, decimalSeparator, thousandSeparator);
+  value = sanitizeCurrencyValue(value, decimalSeparator, thousandsSeparator);
 
   // Replace custom thousand separators
-  value = value.replaceAll(thousandSeparator, "");
+  value = value.replaceAll(thousandsSeparator, "");
 
   const isEndingWithDecimalSeparator = value.endsWith(decimalSeparator);
 
@@ -155,7 +163,7 @@ export const getCurrencyDetailsByLocale = (
   });
 
   let currencySymbol = "";
-  let thousandSeparator = "";
+  let thousandsSeparator = "";
   let decimalSeparator = "";
 
   // get each symbol explicitly
@@ -163,7 +171,7 @@ export const getCurrencyDetailsByLocale = (
     if (_part.type === "currency") {
       currencySymbol = _part.value;
     } else if (_part.type === "group") {
-      thousandSeparator = _part.value;
+      thousandsSeparator = _part.value;
     } else if (_part.type === "decimal") {
       decimalSeparator = _part.value;
     }
@@ -172,7 +180,7 @@ export const getCurrencyDetailsByLocale = (
   return {
     currency: localeData.currency,
     currencySymbol,
-    thousandSeparator,
+    thousandsSeparator,
     decimalSeparator,
     locale,
   };

@@ -12,7 +12,7 @@ export type LocaleType = {
 export type CurrencyDetailsType = {
   currency: string;
   currencySymbol: string;
-  thousandSeparator: string;
+  thousandsSeparator: string;
   decimalSeparator: string;
   locale: string;
 };

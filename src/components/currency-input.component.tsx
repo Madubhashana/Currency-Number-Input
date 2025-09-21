@@ -46,6 +46,7 @@ type CurrencyInputPropsType = Readonly<{
   value?: string;
   min?: number;
   max?: number;
+  showSymbol?: boolean;
   onChange?: (next: string, event: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (next: string, event: FocusEvent<HTMLInputElement, Element>) => void;
 }> &
@@ -80,6 +81,7 @@ const CurrencyInput = ({
   value,
   min,
   max,
+  showSymbol = true,
   onChange,
   onBlur,
   ...delegated
@@ -94,6 +96,8 @@ const CurrencyInput = ({
     string | undefined
   >();
 
+  //14500.5
+
   useEffect(() => {
     /* Uncontrolled value updates
      * Updates the component's value (currencyValue) each time
@@ -107,7 +111,9 @@ const CurrencyInput = ({
   useEffect(() => {
     if (selectedCurrencyData && _numericValue.current) {
       updateCurrencyValue(
-        _numericValue.current.toString(),
+        _numericValue.current
+          .toString()
+          .replace(".", selectedCurrencyData.decimalSeparator),
         DEFAULT_CURRENCY_DECIMALS
       );
     }
@@ -132,7 +138,7 @@ const CurrencyInput = ({
       locale: selectedCurrencyData.locale,
       currency: selectedCurrencyData.currency,
       decimalSeparator: selectedCurrencyData.decimalSeparator,
-      thousandSeparator: selectedCurrencyData.thousandSeparator,
+      thousandsSeparator: selectedCurrencyData.thousandsSeparator,
     });
 
     _numericValue.current = value;
@@ -240,23 +246,30 @@ const CurrencyInput = ({
   };
 
   return (
-    <div className="input-container">
+    <div style={{ display: "flex", flexDirection: "column" }}>
       <div className="currency-input-container">
-        <div>
+        <div className="input-container">
           <label>Currency Input</label>
-          <input
-            value={currencyValue}
-            onChange={handleOnChange}
-            onBlur={handleOnBlur}
-            id="currency-input"
-            data-testid="currency-input"
-            onKeyDown={handleOnkeyDown}
-            onBeforeInput={handleOnBeforeInput}
-            {...delegated}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <input
+              value={currencyValue}
+              onChange={handleOnChange}
+              onBlur={handleOnBlur}
+              id="currency-input"
+              data-testid="currency-input"
+              onKeyDown={handleOnkeyDown}
+              onBeforeInput={handleOnBeforeInput}
+              {...delegated}
+            />
+            {showSymbol && (
+              <span className="currency-symbol">
+                {selectedCurrencyData.currencySymbol}
+              </span>
+            )}
+          </div>
         </div>
 
-        <div>
+        <div className="input-container">
           <label>Locale</label>
           <select
             name="pets"
