@@ -76,7 +76,6 @@ type CurrencyInputPropsType = Readonly<{
  *   );
  * }
  */
-
 const CurrencyInput = ({
   value,
   min,
@@ -95,8 +94,6 @@ const CurrencyInput = ({
   const [validationErrors, setValidationErrors] = useState<
     string | undefined
   >();
-
-  //14500.5
 
   useEffect(() => {
     /* Uncontrolled value updates
@@ -164,19 +161,37 @@ const CurrencyInput = ({
 
     const inputType = (e.nativeEvent as InputEvent).inputType;
 
+    const isPastedFromClipboard =
+      inputType === "insertFromPaste" ||
+      inputType === "insertFromPasteAsQuotation";
+
     // If the value is pasted from the clipboard,
     // the decimals should be rounded to 2 digits.
-    const fractionDigits =
-      inputType === "insertFromPaste" ||
-      inputType === "insertFromPasteAsQuotation"
-        ? DEFAULT_CURRENCY_DECIMALS
-        : undefined;
+    const fractionDigits = isPastedFromClipboard
+      ? DEFAULT_CURRENCY_DECIMALS
+      : undefined;
 
-    const data = updateCurrencyValue(e.target.value, fractionDigits);
+    const value = isPastedFromClipboard
+      ? validateDecimals(e.target.value)
+      : e.target.value;
+
+    const data = updateCurrencyValue(value, fractionDigits);
 
     if (data) {
       onChange?.(data.formattedValue, e);
     }
+  };
+
+  const validateDecimals = (value: string) => {
+    const [integer, fraction] = value.split(
+      selectedCurrencyData.decimalSeparator
+    );
+
+    if (!fraction || !fraction?.length) {
+      return [integer, selectedCurrencyData.decimalSeparator, "00"].join("");
+    }
+
+    return value;
   };
 
   const handleOnBlur: FocusEventHandler<HTMLInputElement> = (e) => {
@@ -184,9 +199,10 @@ const CurrencyInput = ({
       return;
     }
 
-    // If the input is blurred,
-    // the decimals should be rounded to 2 digits.
-    const data = updateCurrencyValue(e.target.value, DEFAULT_CURRENCY_DECIMALS);
+    const data = updateCurrencyValue(
+      validateDecimals(e.target.value),
+      DEFAULT_CURRENCY_DECIMALS
+    );
 
     if (data) {
       onBlur?.(data.formattedValue, e);
@@ -209,13 +225,20 @@ const CurrencyInput = ({
     if (_isNumberpadDecimal.current && e.nativeEvent.data === ".") {
       e.preventDefault();
 
+      const decimalSeparator = selectedCurrencyData.decimalSeparator;
+
       // Intercepts the onChange event with modified value.
       const el = e.currentTarget as HTMLInputElement;
-      el.setRangeText(",", el.selectionStart ?? 0, el.selectionEnd ?? 0, "end");
+      el.setRangeText(
+        decimalSeparator,
+        el.selectionStart ?? 0,
+        el.selectionEnd ?? 0,
+        "end"
+      );
       el.dispatchEvent(
         new InputEvent("input", {
           bubbles: true,
-          data: ",",
+          data: decimalSeparator,
           inputType: "insertText",
         })
       );

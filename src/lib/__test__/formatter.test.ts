@@ -5,10 +5,14 @@ describe("sanitizeCurrencyValue", () => {
   it("should accepts digits, dot, and comma only", () => {
     expect(
       sanitizeCurrencyValue("Price: 1,234.56 USD", ".", ",")
-    ).toStrictEqual("1,234.56");
+    ).toStrictEqual("1234.56");
 
     expect(sanitizeCurrencyValue("CHF 1'234.56", ".", "'")).toStrictEqual(
-      "1'234.56"
+      "1234.56"
+    );
+
+    expect(sanitizeCurrencyValue("1 234,56$", ",", " ")).toStrictEqual(
+      "1234.56"
     );
   });
 });
