@@ -1,0 +1,19 @@
+name: Run unit tests on pull requests
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project and prepare
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+      - run: pnpm install
+      - name: Run tests
+        run: pnpm run test

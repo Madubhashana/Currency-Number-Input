@@ -108,9 +108,11 @@ const CurrencyInput = ({
   useEffect(() => {
     if (selectedCurrencyData && _numericValue.current) {
       updateCurrencyValue(
-        _numericValue.current
-          .toString()
-          .replace(".", selectedCurrencyData.decimalSeparator),
+        validateDecimals(
+          _numericValue.current
+            .toString()
+            .replace(".", selectedCurrencyData.decimalSeparator)
+        ),
         DEFAULT_CURRENCY_DECIMALS
       );
     }

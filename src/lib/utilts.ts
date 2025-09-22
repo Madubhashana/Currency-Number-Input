@@ -56,6 +56,7 @@ export const currencyFormatter = (
 
   value = sanitizeCurrencyValue(value, decimalSeparator, thousandsSeparator);
 
+  // eslint-disable-next-line
   const [int, fraction] = value.split(".");
   const hasDecimalValues = fraction && fraction.length > 0;
 
