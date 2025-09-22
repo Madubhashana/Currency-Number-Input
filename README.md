@@ -5,9 +5,7 @@ A reusable `<CurrencyInput />` component for entering **EUR** amounts with **per
 > NOTE:
 > All the timestamps based on the git commits are loggde in `timestamp.md` file.
 >
-> Start (Must have features): 9f6c57d | 2025-09-21 16:06:40 +0530 | init: Setup React app with tests
->
-> End (Must have features): 729d57f | 2025-09-21 19:51:24 +0530 | finalize the must have features
+> Day 1 <br/> **Start (Must have features)**: 9f6c57d | 2025-09-21 16:06:40 +0530 | init: Setup React app with tests<br/> **End (Must have features)**: 729d57f | 2025-09-21 19:51:24 +0530 | finalize the must have features
 >
 > Time for Must have features: **3hrs and 51 mins**
 >
@@ -18,6 +16,8 @@ A reusable `<CurrencyInput />` component for entering **EUR** amounts with **per
 > - min/max functionality
 > - showSymbol prop
 > - Locale switching
+>
+> Day 2 <br/> **Refactor and Cleanup**: 19a59b8 | 2025-09-22 08:14:22 +0530 | update: refactor and cleanup<br/> **Setup github actions ci/cd to run unit-test**: a7576f3 | 2025-09-22 08:29:39 +0530 | setup ci/cd pipeline to run unit tests on github actions
 
 ## Getting Started
 
