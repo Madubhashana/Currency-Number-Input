@@ -10,10 +10,37 @@ jobs:
     steps:
       - name: Checkout project and prepare
         uses: actions/checkout@v4
-      - name: Setup Node
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.11.0
+      - name: Enable Corepack & activate pnpm
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare "pnpm@10.14.0" --activate
+          pnpm --version
+
+      - name: 🔍 Resolve pnpm dirs
+        id: pnpm_dirs
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Creates PNPM_HOME and prints shell export hints
+          pnpm setup >/dev/null 2>&1 || true
+
+          # Default on Linux GitHub runners:
+          DEFAULT_HOME="$HOME/.local/share/pnpm"
+          echo "PNPM_HOME=${PNPM_HOME:-$DEFAULT_HOME}" >> "$GITHUB_ENV"
+          echo "${PNPM_HOME:-$DEFAULT_HOME}" >> "$GITHUB_PATH"
+
+          echo "PNPM_HOME=${PNPM_HOME:-$DEFAULT_HOME}"
+          pnpm bin -g || true
+
+          echo "store=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+          echo "global_dir=$(pnpm config get global-dir)" >> "$GITHUB_OUTPUT"
+          echo "global_bin=$(pnpm bin -g)" >> "$GITHUB_OUTPUT"
       - run: pnpm install
       - name: Run tests
         run: pnpm run test
