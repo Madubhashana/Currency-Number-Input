@@ -11,3 +11,10 @@
 - cf88a17 | 2025-09-21 22:04:37 +0530 | update: locale selector
 - 3bef4c5 | 2025-09-21 23:17:41 +0530 | feat: Locale switching
 - 3bf8d77 | 2025-09-21 23:56:38 +0530 | fix: live currency conversion
+- 31cf310 | 2025-09-22 00:04:29 +0530 | log timestamps
+- b1420c3 | 2025-09-22 00:07:25 +0530 | add timelogs
+- 19a59b8 | 2025-09-22 08:14:22 +0530 | update: refactor and cleanup
+- a7576f3 | 2025-09-22 08:29:39 +0530 | setup ci/cd pipeline to run unit tests on github actions
+- 98512b8 | 2025-09-22 08:35:43 +0530 | fix: pnpm in github actions
+- e6af377 | 2025-09-22 08:43:13 +0530 | fix: pnpm in github actions 2
+- c80271a | 2025-09-22 08:44:13 +0530 | fix: packageManager in package.json
